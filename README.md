@@ -136,16 +136,15 @@ smalltalk:
   - GemStone-3.2.12
   - GemStone-3.1.0.6
 
+# Override `script` to customize smalltalkCI invocation, e.g.:
+#script:
+#  - stci .mysmalltalk1.ston
+#  - travis_wait stci .mysmalltalk2.ston
+
 # Uncomment to enable caching (only useful for GemStone builds (3x faster))
 #cache:
 #  directories:
 #    - $SMALLTALK_CI_CACHE
-
-# Uncomment to override automatic smalltalkCI execution
-#script:
-#  - "$SMALLTALK_CI_HOME/run.sh"
-#  - "$SMALLTALK_CI_HOME/run.sh" .mysmalltalk.ston
-#  - travis_wait "$SMALLTALK_CI_HOME/run.sh"
 
 ```
 

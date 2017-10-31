@@ -6,7 +6,7 @@ set -o pipefail
 set -o nounset
 
 readonly DEFAULT_STON_CONFIG="smalltalk.ston"
-readonly INSTALL_TARGET_OSX="/usr/local/bin"
+readonly INSTALL_TARGET="/usr/local/bin/stci"
 readonly BINTRAY_API="https://api.bintray.com/content"
 
 ################################################################################
@@ -54,7 +54,7 @@ initialize() {
     source "${SMALLTALK_CI_HOME}/env_vars"
   fi
 
-  if [[ ! -f "${SMALLTALK_CI_HOME}/run.sh" ]]; then
+  if [[ ! -f "${SMALLTALK_CI_EXEC}" ]]; then
     echo "smalltalkCI could not be initialized." 1>&2
     exit 1
   fi
@@ -429,62 +429,38 @@ clean_up() {
 }
 
 ################################################################################
-# Install 'smalltalkCI' command by symlinking current instance.
+# Install 'stci' command by symlinking current instance.
 # Globals:
-#   INSTALL_TARGET_OSX
+#   INSTALL_TARGET
 ################################################################################
 install_script() {
-  local target
-
-  case "$(uname -s)" in
-    "Linux")
-      print_notice "Not yet implemented."
-      ;;
-    "Darwin")
-      target="${INSTALL_TARGET_OSX}"
-      if ! is_dir "${target}"; then
-        local message = "'${target}' does not exist. Do you want to create it?
-                         (y/N): "
-        read -p "${message}" user_input
-        if [[ "${user_input}" = "y" ]]; then
-          sudo mkdir "target"
-        else
-          print_error_and_exit "'${target}' has not been created."
-        fi
-      fi
-      if ! is_file "${target}/smalltalkCI"; then
-        ln -s "${SMALLTALK_CI_HOME}/run.sh" "${target}/smalltalkCI"
-        print_info "The command 'smalltalkCI' has been installed successfully."
-      else
-        print_error_and_exit "'${target}/smalltalkCI' already exists."
-      fi
-      ;;
-  esac
+  local install_dir="$(dirname "${INSTALL_TARGET}")"
+  if ! is_dir "${install_dir}"; then
+    print_error_and_exit "'${install_dir}' does not exist."
+  fi
+  if [[ $PATH != *"${install_dir}"* ]]; then
+    print_error_and_exit "'${install_dir}' not in your $PATH."
+  fi
+  if ! is_file "${INSTALL_TARGET}"; then
+    ln -s "${SMALLTALK_CI_EXEC}" "${INSTALL_TARGET}"
+    print_info "'${INSTALL_TARGET}' was created successfully."
+  else
+    print_error_and_exit "'${INSTALL_TARGET}' already exists."
+  fi
 }
 
 ################################################################################
-# Uninstall 'smalltalkCI' command by removing any symlink to smalltalkCI.
+# Uninstall 'stci' command by removing any symlink to smalltalkCI.
 # Globals:
-#   INSTALL_TARGET_OSX
+#   INSTALL_TARGET
 ################################################################################
 uninstall_script() {
-  local target
-
-  case "$(uname -s)" in
-    "Linux")
-      print_notice "Not yet implemented."
-      ;;
-    "Darwin")
-      target="${INSTALL_TARGET_OSX}"
-      if is_file "${target}/smalltalkCI"; then
-        rm -f "${target}/smalltalkCI"
-        print_info "The command 'smalltalkCI' has been uninstalled
-                    successfully."
-      else
-        print_error_and_exit "'${target}/smalltalkCI' does not exists."
-      fi
-      ;;
-  esac
+  if is_file "${INSTALL_TARGET}"; then
+    rm -f "${INSTALL_TARGET}"
+    print_info "'${INSTALL_TARGET}' was removed successfully."
+  else
+    print_error_and_exit "'${INSTALL_TARGET}' does not exists."
+  fi
 }
 
 ################################################################################
