@@ -13,7 +13,9 @@ install:
   - source env_vars
   - export PATH="$(pwd)/bin:$PATH"
 
-script: stci --debug
+script:
+  - echo "$PATH"
+  - stci --debug
 
 aliases:
   - &ensure-smalltalkci-can-fail
