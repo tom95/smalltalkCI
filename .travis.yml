@@ -8,13 +8,13 @@ branches:
 
 install:
   # Move cache directory if it exists
-  - "[[ ! -d "${SMALLTALK_CI_CACHE}" ]] || mv $SMALLTALK_CI_CACHE $(pwd)"
+  - "[[ ! -d ${SMALLTALK_CI_CACHE} ]] || mv ${SMALLTALK_CI_CACHE} $(pwd)"
   # Make sure to use smalltalkCI from this branch
   - source env_vars
-  - export PATH="$(pwd)/bin:$PATH"
+  - export PATH="$(pwd)/bin:${PATH}"
 
 script:
-  - echo "$PATH"
+  - echo "${PATH}"
   - stci --debug
 
 aliases:
@@ -24,7 +24,7 @@ aliases:
   - &with-gemstone-cache-enabled
     cache:
       directories:
-        - $SMALLTALK_CI_CACHE
+        - ${SMALLTALK_CI_CACHE}
 
 jobs:
   include:
